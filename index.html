@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Durak Kontrol</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Arial;
+  margin: 0;
+  padding: 15px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+button {
+  width: 100%;
+  padding: 16px;
+  margin: 6px 0;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #007aff;
+  color: white;
+}
+
+button.back {
+  background: #555;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- İLÇELER -->
+<div id="ilceler" class="page active">
+  <h2>İlçeler</h2>
+  <div id="ilceButonlari"></div>
+</div>
+
+<!-- DURAKLAR -->
+<div id="duraklar" class="page">
+  <button class="back" onclick="geri()">⬅ İlçelere Dön</button>
+  <input type="text" id="arama" placeholder="Durak ara..." oninput="filtrele()">
+  <ul id="durakListesi"></ul>
+</div>
+
+<script>
+const veriler = {
+  "Efeler": [
+    ["ADÜ Ana Giriş", 37.8489, 27.8453],
+    ["Mimar Sinan", 37.8572, 27.8411]
+  ],
+  "Nazilli": [
+    ["Nazilli Devlet Hastanesi", 37.9166, 28.3221]
+  ],
+  "Söke": [
+    ["Söke Otogar", 37.7511, 27.4108]
+  ]
+};
+
+let seciliIlce = "";
+let aktifDuraklar = [];
+
+// İlçeleri oluştur
+const ilceAlan = document.getElementById("ilceButonlari");
+Object.keys(veriler).forEach(ilce => {
+  const btn = document.createElement("button");
+  btn.textContent = ilce;
+  btn.onclick = () => ilceAc(ilce);
+  ilceAlan.appendChild(btn);
+});
+
+function ilceAc(ilce) {
+  seciliIlce = ilce;
+  aktifDuraklar = veriler[ilce];
+  sayfaDegistir("duraklar");
+  listele(aktifDuraklar);
+}
+
+function geri() {
+  sayfaDegistir("ilceler");
+}
+
+function sayfaDegistir(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("arama").value = "";
+}
+
+function listele(liste) {
+  const ul = document.getElementById("durakListesi");
+  ul.innerHTML = "";
+  liste.forEach(d => {
+    const li = document.createElement("li");
+    li.textContent = d[0];
+    li.onclick = () => {
+      window.location.href =
+        `https://www.google.com/maps/dir/?api=1&destination=${d[1]},${d[2]}`;
+    };
+    ul.appendChild(li);
+  });
+}
+
+function filtrele() {
+  const q = document.getElementById("arama").value.toLowerCase();
+  const sonuc = aktifDuraklar.filter(d =>
+    d[0].toLowerCase().includes(q)
+  );
+  listele(sonuc);
+}
+</script>
+
+</body>
+</html>
